@@ -184,10 +184,7 @@ public record Version(int major, int minor, int patch, String preRelease, String
      */
     public static Version parse(String version) throws SemverInvalidInputException {
         var hint = """
-                    \nThe signature of version should be MAJOR.MINOR.PATCH-LABEL e.g. (3.42.11).
-                    1. Exactly three parts, separated by dots.
-                    2. Each part is a non-negative whole number.
-                    3. No leading zeroes. (01 is invalid as a number)
+                    \nThe signature of version should be MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD]
                     """;
 
         if (version == null) {
