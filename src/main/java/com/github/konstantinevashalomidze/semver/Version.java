@@ -304,15 +304,21 @@ public record Version(int major, int minor, int patch, String preRelease, String
     /**
      * <p>Versions are equal when they have the same precedence, build is
      * ignored ({@code 1.0.0+a == 1.0.0+b}). It is consistent with {@link #compareTo(Version)}
-     * and {@link #hashCode()}</p>
+     * and {@link #hashCode()}.</p>
      * @param other version to compare to.
-     * @return if other is null, not a version, not equal then false otherwise true.
+     * @return if other is null, not a version and non-equal then {@code false} otherwise {@code true}.
      */
     @Override
     public boolean equals(Object other) {
         return this == other || (other instanceof Version v) && (compareTo(v) == 0);
     }
 
+    /**
+     * Gives object's hash code back. Consistent with equals, so equal versions have equal
+     * hash codes. The build is not part of the hash because {@code 1.0.0+a} and {@code 1.0.0+b}
+     * would be equal but hash differently, and any hash data structure would hold both of them.
+     * @return the hash code
+     */
     @Override
     public int hashCode() {
         String majorCode = Integer.toString(Objects.hashCode(major));
