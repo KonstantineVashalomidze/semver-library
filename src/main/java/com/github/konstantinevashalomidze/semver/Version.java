@@ -77,6 +77,14 @@ public record Version(int major, int minor, int patch, String preRelease, String
         return true;
     }
 
+    /**
+     * Compares by <a href="https://semver.org/">semantic versioning 2.0.0</a> precedence {@link Version}.
+     *
+     * @param other Version to compare to.
+     * @return negative when {@code this < other}, zero when they are equal and positive when
+     * {@code this > other}.
+     * @throws NullPointerException If null is passed
+     */
     @Override
     public int compareTo(Version other) {
         int majorComparisonResult = Integer.compare(major, other.major);
