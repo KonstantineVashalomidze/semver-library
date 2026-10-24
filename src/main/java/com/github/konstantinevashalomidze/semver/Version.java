@@ -150,10 +150,29 @@ public record Version(int major, int minor, int patch, String preRelease, String
     }
 
     /**
+     * Parses string in the (<a href="https://semver.org/">semantic versioning 2.0.0</a>) format
+     * {@code MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD]} into a {@code Version}.
      *
-     * @param version
-     * @return
-     * @throws SemverInvalidInputException
+     * <pre>{@code
+     * Version.parse("1.4.2") // 1.4.2, no pre-release and build
+     * Version.parse("1.0.0-beta.1"); // pre-release "beta.1"
+     * Version.parse("1.0.0-beta.1+exp.sha.5114f"); // pre-release "beta.1", build "exp.sha.51114f
+     * }</pre>
+     *
+     * <p>The pre-release and the build are returned without their leading
+     * {@code -} and {@code +} and are empty strings when not presented. Only
+     * {@code major}, {@code minor} and {@code patch} must fit into an {@code int}.
+     * identifiers in the pre-release and build can be any length.</p>
+     *
+     *
+     * @param version the text to parse
+     * @return the parsed version
+     * @throws SemverInvalidInputException if {@code version} is {@code null} or is not a valid
+     * (<a href="https://semver.org/">semantic versioning 2.0.0</a>) version: it does not have exactly
+     * three dot-separated numbers, a number has a leading zeroes or characters other than the ascii
+     * digits 0-9, a number is too large for an {@code int}, a {@code -} or {@code +} is not followed
+     * by text, a pre-release or build identifier is empty or contains characters other than {@code 0-9},
+     * {@code A-Z}, {@code a-z} and {@code -}, or a numeric pre-release identifier has a leading zeroes.
      */
     public static Version parse(String version) throws SemverInvalidInputException {
         var hint = """
@@ -282,6 +301,13 @@ public record Version(int major, int minor, int patch, String preRelease, String
         return true;
     }
 
+    /**
+     * <p>Versions are equal when they have the same precedence, build is
+     * ignored ({@code 1.0.0+a == 1.0.0+b}). It is consistent with {@link #compareTo(Version)}
+     * and {@link #hashCode()}</p>
+     * @param other version to compare to.
+     * @return if other is null, not a version, not equal then false otherwise true.
+     */
     @Override
     public boolean equals(Object other) {
         return this == other || (other instanceof Version v) && (compareTo(v) == 0);
