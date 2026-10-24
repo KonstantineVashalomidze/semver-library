@@ -6,7 +6,29 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
- * @author Konstantine Vashalomidze
+ * <p>Version is an immutable record representing a
+ * (<a href="https://semver.org/">semantic versioning 2.0.0</a>).
+ *
+ * <p>Comparison happens by comparing <strong>major</strong>, <strong>minor</strong>, <strong>patch</strong>
+ * as numbers and the first difference decides. If those are equal, a version without a pre-release is higher
+ * than one with it ({@code 1.0.0-rc.1 < 1.0.0}). If both have a pre-release, compare its dot-separated identifiers
+ * from left to right, and first difference decides:</p>
+ * <ol>
+ *     <li>Both numeric: numbers are compared ({@code beta.2 < beta.11})</li>
+ *     <li>Both text: ASCII order comparison ({@code alpha < beta})</li>
+ *     <li>Numeric Identifier is lower than a text one ({@code alpha.1 < alpha.beta})</li>
+ *     <li>If all common ones are equal, the one with more identifiers is higher ({@code beta < beta.2})</li>
+ * </ol>
+ * Build part is not considered during comparison.
+ * {@link #equals(Object)} and {@link #hashCode()} follow the same rules.
+ *
+ * @param major Represents breaking change in a library
+ * @param minor Represents non-breaking features
+ * @param patch Represents bug fixes
+ * @param preRelease Dot separated identifiers, empty if not specified
+ * @param build Dot separated identifiers, empty if not specified. Isn't considered during comparisons.
+ *
+ * @author <a href="https://portfolio.kosta-server.org/">Konstantine Vashalomidze</a>
  */
 public record Version(int major, int minor, int patch, String preRelease, String build) implements Comparable<Version> {
     public Version {
@@ -127,6 +149,12 @@ public record Version(int major, int minor, int patch, String preRelease, String
         }
     }
 
+    /**
+     *
+     * @param version
+     * @return
+     * @throws SemverInvalidInputException
+     */
     public static Version parse(String version) throws SemverInvalidInputException {
         var hint = """
                     \nThe signature of version should be MAJOR.MINOR.PATCH-LABEL e.g. (3.42.11).
